@@ -9,6 +9,8 @@ class App extends Component {
       robot:[{
         coordenada: '',
         instruccion: '',
+        coordenada_error: '',
+        instruccion_error: '',
         output:'',
         mapeo:''
       }],
@@ -39,6 +41,8 @@ class App extends Component {
     let robots = this.state.robot;
 
     robots[index][name] = value.toUpperCase();
+    robots[index].instruccion_error = '';
+    robots[index].coordenada_error = '';
 
     this.setState({
       robot: robots,
@@ -52,112 +56,144 @@ class App extends Component {
       let c = objet.coordenada.split(' ');
       let i = objet.instruccion.split(' ');
 
-      if(c.length >= 3 && i.length >= 1){
-        let c_X = parseInt(c[0]);
-        let c_Y = parseInt(c[1]);
-        let c_O = c[2];
+      if(c.length == 3 && i.length >= 1){
+        if (c.indexOf(',') >= 0 || c.indexOf('.') >= 0) { robots[index].coordenada_error = 'Error: los números que se ingresan tienen que ser enteros.'; }
+        else{
+          if(c[2] != 'N' && c[2] != 'E' && c[2] != 'S' && c[2] != 'W'){ robots[index].coordenada_error = 'Error: la orientación no es correcta, solo puede ser (N, E, S, W).'; }
+          else{
+            let iFilVacio = i.filter(function(obje,inde) {
+              if(obje != ' '){
+                return obje
+              }
+            })
+            let iFilValidat = i.filter(function(obje,inde) {
+              if(obje != 'L' && obje != 'R' && obje != 'F') {
+                return obje
+              }
+            })
 
-        let mapeo = '';
-        const addMapeo = () =>{
-          mapeo += c_X + ' ' + c_Y + ' ' + c_O + ' | ';
-        }
-        addMapeo()
+            if(iFilVacio.length == 0){
+              robots[index].instruccion_error = 'Error: el campo tiene que tener como minimo una instrucción.';
+            }
+            else{
+              if(iFilValidat.length >= 1){
+                robots[index].instruccion_error = 'Error: la instrucción no es correcta, solo puede ser (L, R, F).';
+              }
+              else{
+                let c_X = parseInt(c[0]);
+                let c_Y = parseInt(c[1]);
+                let c_O = c[2];
 
-        const procesCoord_L = (val) => {
-          switch (c_O) {
-            case 'N':
-              c_O = 'W'
-              addMapeo()
-              break;
-            case 'E':
-              c_O = 'N'
-              addMapeo()
-              break;
-            case 'W':
-              c_O = 'S'
-              addMapeo()
-              break;
-            case 'S':
-              c_O = 'E'
-              addMapeo()
-              break;
+                let mapeo = '';
+                const addMapeo = () =>{
+                  mapeo += c_X + ' ' + c_Y + ' ' + c_O + ' | ';
+                }
+                addMapeo()
+
+                const procesCoord_L = (val) => {
+                  switch (c_O) {
+                    case 'N':
+                      c_O = 'W'
+                      addMapeo()
+                      break;
+                    case 'E':
+                      c_O = 'N'
+                      addMapeo()
+                      break;
+                    case 'W':
+                      c_O = 'S'
+                      addMapeo()
+                      break;
+                    case 'S':
+                      c_O = 'E'
+                      addMapeo()
+                      break;
+                  }
+                }
+
+                const procesCoord_R = (val) => {
+                  switch (c_O) {
+                    case 'N':
+                      c_O = 'E'
+                      addMapeo()
+                      break;
+                    case 'E':
+                      c_O = 'S'
+                      addMapeo()
+                      break;
+                    case 'W':
+                      c_O = 'N'
+                      addMapeo()
+                      break;
+                    case 'S':
+                      c_O = 'W'
+                      addMapeo()
+                      break;
+                  }
+                }
+
+                const procesCoord_F = (val) => {
+                  switch (c_O) {
+                    case 'N':
+                      c_Y++
+                      addMapeo()
+                      break;
+                    case 'E':
+                      c_X++
+                      addMapeo()
+                      break;
+                    case 'W':
+                      c_X--
+                      addMapeo()
+                      break;
+                    case 'S':
+                      c_Y--
+                      addMapeo()
+                      break;
+                  }
+                }
+
+                i.map(function(obj,ind) {
+                  switch (obj) {
+                    case 'L':
+                      procesCoord_L(obj)
+                      break;
+                    case 'R':
+                      procesCoord_R(obj)
+                      break;
+                    case 'F':
+                      procesCoord_F(obj)
+                      break;
+                  }
+                });
+
+                let result = c_X + ' ' + c_Y + ' ' + c_O;
+
+                robots[index].output = result;
+                robots[index].mapeo = mapeo;
+                robots[index].instruccion_error = '';
+                robots[index].coordenada_error = '';
+              }
+            }
           }
         }
-
-        const procesCoord_R = (val) => {
-          switch (c_O) {
-            case 'N':
-              c_O = 'E'
-              addMapeo()
-              break;
-            case 'E':
-              c_O = 'S'
-              addMapeo()
-              break;
-            case 'W':
-              c_O = 'N'
-              addMapeo()
-              break;
-            case 'S':
-              c_O = 'W'
-              addMapeo()
-              break;
-          }
-        }
-
-        const procesCoord_F = (val) => {
-          switch (c_O) {
-            case 'N':
-              c_Y++
-              addMapeo()
-              break;
-            case 'E':
-              c_X++
-              addMapeo()
-              break;
-            case 'W':
-              c_X--
-              addMapeo()
-              break;
-            case 'S':
-              c_Y--
-              addMapeo()
-              break;
-          }
-        }
-
-        i.map(function(obj,ind) {
-          switch (obj) {
-            case 'L':
-              procesCoord_L(obj)
-              break;
-            case 'R':
-              procesCoord_R(obj)
-              break;
-            case 'F':
-              procesCoord_F(obj)
-              break;
-          }
-        });
-
-        let result = c_X + ' ' + c_Y + ' ' + c_O;
-
-        robots[index].output = result;
-        robots[index].mapeo = mapeo;
+      }
+      else{
+        if(c.length != 3){ robots[index].coordenada_error = 'Error: el campo tiene que tener un par de enteros y una orientación.'; }
       }
     })
 
     this.setState({
       robot: robots
     });
-
-    console.log(this.state.robot)
   }
 
   addRobot(e) {
     let newRobot = {
       coordenada: '',
       instruccion: '',
+      coordenada_error: '',
+      instruccion_error: '',
       output:'',
       mapeo:''
     }
@@ -178,7 +214,6 @@ class App extends Component {
     let robots = this.state.robot.filter(function(obj,ind) {
       if(ind != index){ return obj;}
     });
-    console.log(robots)
 
     this.setState({
       robot: robots,
@@ -190,7 +225,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="btn">
-          <button onClick={this.addRobot}>
+          <button className="btnAdd" onClick={this.addRobot}>
             AGREGAR ROBOT
           </button>
         </div>
@@ -202,8 +237,8 @@ class App extends Component {
               <div className="contentGral" key={'contentGral_'+ind}>
                 <p className="nameRobot">
                   {nameRobot}
-                  <button className="btn" name={'deleteRobot_'+ind} onClick={this.deleteRobot}>
-                    ELIMINAR ROBOT
+                  <button className="btnDelete" name={'deleteRobot_'+ind} onClick={this.deleteRobot}>
+                    x
                   </button>
                 </p>
 
@@ -214,11 +249,13 @@ class App extends Component {
                     <label> Coordenada: </label>
                     <input type="text" className="inputText" name={'coordenada_'+ind} value={this.state.robot[ind].coordenada} onChange={this.handleInputChange} />
                   </div>
+                  <p className="LabelError"> {this.state.robot[ind].coordenada_error} </p>
 
                   <div className="Instruccion">
                     <label> Instrucción: </label>
-                    <input type="text" className="inputText" maxLength="5" name={'instruccion_'+ind} value={this.state.robot[ind].instruccion} onChange={this.handleInputChange} />
+                    <input type="text" className="inputText" maxLength="100" name={'instruccion_'+ind} value={this.state.robot[ind].instruccion} onChange={this.handleInputChange} />
                   </div>
+                  <p className="LabelError"> {this.state.robot[ind].instruccion_error} </p>
                 </div>
 
                 <div className="ContentOutput">
@@ -242,7 +279,7 @@ class App extends Component {
         }
 
         <div className="btn">
-          <button onClick={this.buscarPosicionamiento}>
+          <button className="btnSubmit" onClick={this.buscarPosicionamiento}>
             {'BUSCAR POSICIONAMIENTO DE '+txtRobot}
           </button>
         </div>
