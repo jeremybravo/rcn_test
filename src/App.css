@@ -1,0 +1,91 @@
+.App {
+  text-align: center;
+  margin: 10px 0px 10px 0px;
+}
+
+.contentGral{
+  margin: 1%;
+  border: 2px solid #61dafb;
+  position: relative;
+  float: left;
+  width: 97%;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ContentInput, .ContentOutput{
+  width: 18%;
+  border: 2px solid #61dafb;
+  min-height: 50px;
+  margin:1%;
+  position: relative;
+  float: left;
+}
+
+.ContentMap{
+  width: 57%;
+  border: 2px solid #61dafb;
+  min-height: 50px;
+  position: relative;
+  float: left;
+  margin:1%;
+}
+
+p{
+  color: #fff;
+  text-align: left;
+  margin: 5px;
+}
+
+.Coordenada, .Instruccion, .Salida{
+  background-color: #fff;
+  margin: 5px;
+  padding: 5px;
+  text-align: left;
+}
+
+.inputText{
+  width: 100px;
+}
+
+.btn{
+  position: relative;
+  float: right;
+  margin-right: 1%;
+}
+
+button{
+  cursor: pointer;
+}
+
+.nameRobot{
+  text-align: center;
+}
